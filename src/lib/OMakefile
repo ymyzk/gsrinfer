@@ -72,6 +72,7 @@ BYTE_ENABLED = true
 # OCAML_LINK_FLAGS +=
 # OCAML_BYTE_LINK_FLAGS +=
 # OCAML_NATIVE_LINK_FLAGS +=
+MENHIR_ENABLED = true
 
 ################################################
 # Generated files
