@@ -23,6 +23,7 @@
 #
 
 # .PHONY: all install clean
+.PHONY: clean
 
 ########################################################################
 # OCaml configuration.
@@ -97,3 +98,8 @@ FILES[] =
 LIB = itgl
 
 .DEFAULT: $(OCamlLibrary $(LIB), $(FILES))
+
+clean:
+rm -f \
+    $(filter-proper-targets $(glob $(addsuffix .*, $(FILES)))) \
+    $(LIB).a $(LIB).cma $(LIB).cmxa
