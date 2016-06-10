@@ -1,8 +1,12 @@
 language: c
 sudo: required
-before_install: bash -ex .travis-ocaml.sh
+install:
+  - bash -ex .travis-ocaml.sh
+  - eval $(opam config env)
+  - opam install menhir omake
+script:
+  - omake
 env:
-  - OCAML_VERSION=4.03
+  - OCAML_VERSION=4.03 OPAMYES=1
 os:
   - linux
-  - osx
