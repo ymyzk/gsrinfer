@@ -1,4 +1,4 @@
-open Environment
+open Syntax
 
 let parse_string s =
   let lexbuf = Lexing.from_string (s ^ ";;") in

@@ -21,21 +21,6 @@ let rec string_of_type = function
   | TyFun (t1, t2) -> sprintf "(%s -> %s)" (string_of_type t1) (string_of_type t2)
   | TyDyn -> "?"
 
-(*
-let match_function t = match t with
-| TyFun _ -> t
-| TyDyn -> TyFun (TyDyn, TyDyn)
-| _ -> raise @@ Type_error ("cannot match function: %s" ^ string_of_type t)
-
-let rec check_consistency s t = match s, t with
-| (s, t) when s = t -> true
-| (_, TyDyn) | (TyDyn, _) -> true
-| (TyFun (s1, t1), TyFun (s2, t2)) ->
-    check_consistency s1 s2 && check_consistency t1 t2
-| _ -> false
-*)
-
-
 (* Syntax *)
 
 type id = string
@@ -67,3 +52,11 @@ let rec string_of_exp = function
   | FunE (x, x_t, e) -> sprintf "λ%s:%s.%s" x (string_of_type x_t) (string_of_exp e)
   | App (x, y) -> sprintf "(%s %s)" (string_of_exp x) (string_of_exp y)
 
+(* Type Environment *)
+
+module Environment = Map.Make (
+  struct
+    type t = id
+    let compare (x : id) y = compare x y
+  end
+)

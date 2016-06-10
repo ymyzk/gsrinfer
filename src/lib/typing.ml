@@ -1,4 +1,3 @@
-open Environment
 open Syntax
 
 exception Type_error of string
