@@ -1,38 +1,29 @@
+open Constraints
 open Syntax
 
 exception Type_error of string
+
+(* Utilities *)
 
 let rec is_static_type = function
   | TyFun (t1, t2) -> (is_static_type t1) && (is_static_type t2)
   | TyDyn -> false
   | _ -> true
 
-type constr =
-  | ConstrEqual of ty * ty
-  | ConstrConsistent of ty * ty
+let is_base_type = function
+  | TyInt | TyBool -> true
+  | _ -> false
 
-let string_of_constr = function
-  | ConstrEqual (u1, u2) -> (string_of_type u1) ^ "=" ^ (string_of_type u2)
-  | ConstrConsistent (u1, u2) -> (string_of_type u1) ^ "~" ^ (string_of_type u2)
+let is_tyvar = function
+  | TyVar _ -> true
+  | _ -> false
 
-(* [x:=t]u *)
-let rec subst_type x t u = match u with
-  | TyFun (u1, u2) -> TyFun (subst_type x t u1, subst_type x t u2)
-  | TyVar x' -> if x = x' then t else u
-  | _ -> u
+let is_typaram = function
+  | TyParam _ -> true
+  | _ -> false
 
-let rec subst_type_constraint x t = function
-  | ConstrEqual (u1, u2) -> ConstrEqual (subst_type x t u1, subst_type x t u2)
-  | ConstrConsistent (u1, u2) -> ConstrConsistent (subst_type x t u1, subst_type x t u2)
-
-let rec subst_type_constraints x t c =
-  (* TODO: OK? *)
-  List.map (subst_type_constraint x t) c
-
-module Constraint = struct
-  type t = constr
-  let compare = compare
-end
+(* Base type, type variables, or type parameters *)
+let is_bvp_type t = is_base_type t || is_tyvar t || is_typaram t
 
 module Variables = Set.Make(
   struct
@@ -40,13 +31,6 @@ module Variables = Set.Make(
     let compare = compare
   end
 )
-module Constraints = Set.Make(Constraint)
-
-let map_constraints f c =
-  Constraints.fold (fun x l -> (f x) :: l) c []
-
-let string_of_constraints c =
-  String.concat ", " @@ map_constraints string_of_constr c
 
 let fresh_tyvar =
   let counter = ref 0 in
@@ -55,6 +39,11 @@ let fresh_tyvar =
     counter := v + 1;
     TyVar (v + 1)
   in body
+
+let rec tyvars = function
+  | TyVar x -> Variables.singleton x
+  | TyFun (t1, t2) -> Variables.union (tyvars t1) (tyvars t2)
+  | _ -> Variables.empty
 
 let generate_constraints env e =
   let generate_constraints_codomain = function
@@ -113,27 +102,8 @@ let generate_constraints env e =
   in
   generate_constraints env e
 
-let rec tyvars = function
-  | TyVar x -> Variables.singleton x
-  | TyFun (t1, t2) -> Variables.union (tyvars t1) (tyvars t2)
-  | _ -> Variables.empty
-
 let unify c =
-  let is_base_type = function
-    | TyInt | TyBool -> true
-    | _ -> false
-  in
-  let is_tyvar = function
-    | TyVar _ -> true
-    | _ -> false
-  in
-  let is_typaram = function
-    | TyParam _ -> true
-    | _ -> false
-  in
-  let is_bvp_type t = is_base_type t || is_tyvar t || is_typaram t in
   let rec unify c =
-    prerr_endline @@ String.concat ", " @@ List.map string_of_constr c;
     match c with
     | [] -> []
     | ConstrConsistent (u1, u2) :: c when u1 = u2 && is_bvp_type u1 ->
