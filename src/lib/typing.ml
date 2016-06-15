@@ -25,6 +25,8 @@ let is_typaram = function
 (* Base type, type variables, or type parameters *)
 let is_bvp_type t = is_base_type t || is_tyvar t || is_typaram t
 
+(* Type Variables *)
+
 module Variables = Set.Make(
   struct
     type t = tyvar
@@ -44,6 +46,20 @@ let rec tyvars = function
   | TyVar x -> Variables.singleton x
   | TyFun (t1, t2) -> Variables.union (tyvars t1) (tyvars t2)
   | _ -> Variables.empty
+
+(* Substitutions *)
+
+type substitution = tyvar * ty
+type substitutions = substitution list
+
+let string_of_substitution (x, t) =
+  Printf.sprintf "x%d=%s" x @@ string_of_type t
+
+let string_of_substitutions s =
+  String.concat ", " @@ List.map string_of_substitution s
+
+let subst_type_substitutions (t : ty) (s : substitutions) =
+  List.fold_left (fun u -> fun (x, t) -> subst_type x t u) t s
 
 (* Type Inference *)
 
@@ -104,7 +120,7 @@ let generate_constraints env e =
   in
   generate_constraints env e
 
-let unify c =
+let unify c : substitutions =
   let rec unify c =
     match c with
     | [] -> []
@@ -130,7 +146,7 @@ let unify c =
         unify @@ ConstrEqual (x, t) :: c
     | ConstrEqual (TyVar x, t) :: c when not @@ Variables.mem x @@ tyvars t ->
         let s = unify @@ subst_type_constraints x t c in
-        (TyVar x, t) :: s
+        (x, t) :: s
     | _ -> raise @@ Type_error "cannot unify"
   in
   let c = map_constraints (fun x -> x) c in
