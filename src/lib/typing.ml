@@ -45,6 +45,8 @@ let rec tyvars = function
   | TyFun (t1, t2) -> Variables.union (tyvars t1) (tyvars t2)
   | _ -> Variables.empty
 
+(* Type Inference *)
+
 let generate_constraints env e =
   let generate_constraints_codomain = function
   | TyVar x ->
