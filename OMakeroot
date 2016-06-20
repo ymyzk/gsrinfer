@@ -37,6 +37,8 @@ open build/OCaml
 #
 DefineCommandVars()
 
+OCAMLFLAGS    += -annot -bin-annot
+
 #
 # Include the OMakefile in this directory.
 #
