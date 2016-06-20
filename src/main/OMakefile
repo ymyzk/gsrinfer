@@ -23,11 +23,71 @@
 #
 
 # .PHONY: all install clean
+.PHONY: clean
 
 ########################################################################
-# Subdirectories.
-# You may want to include some subdirectories in this project.
-# If so, define the subdirectory targets and uncomment this section.
+# OCaml configuration.
+# Delete this section if you are not building OCaml files.
 #
 
-.SUBDIRS: lib main
+################################################
+# Configuration.  You may want to modify any of these configuration
+# variables.
+#
+
+#
+# This project requires ocamlfind (default - false).
+#
+# USE_OCAMLFIND = true
+#
+# OCAMLPACKS[] =
+#    pack1
+#    pack2
+#
+# if $(not $(OCAMLFIND_EXISTS))
+#    eprintln(This project requires ocamlfind, but is was not found.)
+#    eprintln(You need to install ocamlfind and run "omake --configure".)
+#    exit 1
+
+#
+# Include path
+#
+OCAMLINCLUDES += ../lib
+
+#
+# Compile native or byte code?
+#
+# The default values are defined as follows:
+#
+NATIVE_ENABLED = $(OCAMLOPT_EXISTS)
+BYTE_ENABLED = $(not $(OCAMLOPT_EXISTS))
+
+#
+# Various options
+#
+# OCAMLFLAGS    +=
+# OCAMLCFLAGS   +=
+# OCAMLOPTFLAGS +=
+# OCAML_LINK_FLAGS +=
+# OCAML_BYTE_LINK_FLAGS +=
+# OCAML_NATIVE_LINK_FLAGS +=
+
+################################################
+# Build an OCaml program
+#
+
+FILES[] =
+    main
+
+PROGRAM = main
+OCAML_LIBS += ../lib/itgl
+# OCAML_CLIBS +=
+# OCAML_OTHER_LIBS +=
+# OCAML_LIB_FLAGS +=
+
+.DEFAULT: $(OCamlProgram $(PROGRAM), $(FILES))
+
+clean:
+rm -f \
+    $(filter-proper-targets $(glob $(addsuffix .*, $(FILES)))) \
+    $(PROGRAM)
