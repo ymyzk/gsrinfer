@@ -30,7 +30,7 @@ let is_bvp_type t = is_base_type t || is_tyvar t || is_typaram t
 module Variables = Set.Make(
   struct
     type t = tyvar
-    let compare = compare
+    let compare (x : tyvar) y = compare x y
   end
 )
 
@@ -149,5 +149,10 @@ let unify c : substitutions =
         (x, t) :: s
     | _ -> raise @@ Type_error "cannot unify"
   in
-  let c = map_constraints (fun x -> x) c in
-  unify c
+  unify @@ map_constraints (fun x -> x) c
+
+let type_of_exp env e =
+  let u, c = generate_constraints env e in
+  let s = unify c in
+  let t = subst_type_substitutions u s in
+  t
