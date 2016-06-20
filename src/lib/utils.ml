@@ -17,4 +17,6 @@ let test1 s =
   let s = Typing.unify c in
   print_endline @@ sprintf "substitutions: %s" @@ Typing.string_of_substitutions s;
   let t = Typing.subst_type_substitutions u s in
-  print_endline @@ sprintf "type: %s" @@ Syntax.string_of_type t
+  print_endline @@ sprintf "type: %s" @@ Syntax.string_of_type t;
+  print_endline "TyVar -> TyParam";
+  print_endline @@ sprintf "type: %s" @@ Syntax.string_of_type @@ Typing.type_of_exp empty e

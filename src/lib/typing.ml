@@ -61,6 +61,41 @@ let string_of_substitutions s =
 let subst_type_substitutions (t : ty) (s : substitutions) =
   List.fold_left (fun u -> fun (x, t) -> subst_type x t u) t s
 
+module TyVarMap = Map.Make (
+  struct
+    type t = tyvar
+    let compare (x : tyvar) y = compare x y
+  end
+)
+
+let fresh_typaram =
+  let counter = ref 0 in
+  let body () =
+    let v = !counter in
+    counter := v + 1;
+    TyParam (v + 1)
+  in body
+
+let rec subst_tyvar t m = match t with
+  | TyVar x -> TyVarMap.find x m
+  | TyFun (t1, t2) -> TyFun (subst_tyvar t1 m, subst_tyvar t2 m)
+  | _ -> t
+
+(* Create map from type parameters to type variables *)
+let create_tyvar_typaram_map t =
+  let vars = tyvars t in
+  let f x m =
+    if TyVarMap.mem x m then
+      m
+    else
+      TyVarMap.add x (fresh_typaram ()) m
+  in
+  Variables.fold f vars TyVarMap.empty
+
+(* Replace type variables with type parameters *)
+let subst_tyvars (t : ty) : ty =
+  subst_tyvar t @@ create_tyvar_typaram_map t
+
 (* Type Inference *)
 
 let generate_constraints env e =
@@ -155,4 +190,4 @@ let type_of_exp env e =
   let u, c = generate_constraints env e in
   let s = unify c in
   let t = subst_type_substitutions u s in
-  t
+  subst_tyvars t
