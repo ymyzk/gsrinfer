@@ -94,6 +94,7 @@ OCAMLINCLUDES += ../src/lib
 
 FILES[] =
     test
+    typing_test
 
 PROGRAM = test
 OCAML_LIBS += ../src/lib/itgl

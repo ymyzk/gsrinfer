@@ -19,7 +19,11 @@ _build/
 setup.data
 setup.log
 
+*.cache
+*.cmt
+*.log
 *.omc
+*.opt
 *.swp
 .omakedb
 .omakedb.lock
@@ -27,3 +31,4 @@ lexer.ml
 parser.ml
 parser.mli
 parser.output
+tests/test
