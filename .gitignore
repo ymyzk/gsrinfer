@@ -24,6 +24,7 @@ setup.log
 *.log
 *.omc
 *.opt
+*.run
 *.swp
 .omakedb
 .omakedb.lock

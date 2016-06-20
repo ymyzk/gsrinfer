@@ -94,6 +94,7 @@ OCAMLINCLUDES += ../src/lib
 
 FILES[] =
     test
+    syntax_test
     typing_test
 
 PROGRAM = test
