@@ -21,6 +21,7 @@ setup.log
 
 *.cache
 *.cmt
+*.cmti
 *.log
 *.omc
 *.opt
