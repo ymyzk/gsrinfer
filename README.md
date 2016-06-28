@@ -4,8 +4,23 @@
 
 A type inference algorithm implementation for Implicitly Typed Gradual Language
 
-# Compile & Run
+## Usage
+### Compile & Run interpreter
 ```shell
 omake
 ./src/main/main
 ```
+
+### Run unit tests
+```shell
+omake test
+```
+
+## Requirements
+- OCaml 4.01+
+- OMake
+- Menhir
+- OUnit2
+
+## References
+- [Principal Type Schemes for Gradual Programs. In Proc. of ACM POPL, 2015.](http://www.cs.ubc.ca/~rxg/ptsgp.pdf)
