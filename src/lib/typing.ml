@@ -177,8 +177,8 @@ let unify c : substitutions =
         unify c
     | ConstrEqual (TyFun (t11, t12), TyFun (t21, t22)) :: c when is_static_type t11 && is_static_type t12 && is_static_type t21 && is_static_type t22 ->
         unify @@ ConstrEqual (t11, t21) :: ConstrEqual (t12, t22) :: c
-    | ConstrEqual (t, x) :: c when is_static_type t && not (is_tyvar t) ->
-        unify @@ ConstrEqual (x, t) :: c
+    | ConstrEqual (t, TyVar x) :: c when is_static_type t && not (is_tyvar t) ->
+        unify @@ ConstrEqual (TyVar x, t) :: c
     | ConstrEqual (TyVar x, t) :: c when not @@ Variables.mem x @@ tyvars t ->
         let s = unify @@ subst_type_constraints x t c in
         (x, t) :: s
