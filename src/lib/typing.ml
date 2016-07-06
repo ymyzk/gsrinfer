@@ -186,7 +186,8 @@ let unify c : substitutions =
     | ConstrEqual (TyVar x, t) :: c when not @@ Variables.mem x @@ tyvars t ->
         let s = unify @@ subst_type_constraints x t c in
         (x, t) :: s
-    | _ -> raise @@ Type_error "cannot unify"
+    | c :: _ ->
+        raise @@ Type_error ("cannot unify: " ^ (string_of_constr c))
   in
   unify @@ map_constraints (fun x -> x) c
 
