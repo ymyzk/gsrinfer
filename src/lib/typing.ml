@@ -119,7 +119,11 @@ let generate_constraints env e =
   in
   let rec generate_constraints env e = match e with
   | Var x ->
-      let t = Environment.find x env in
+      let t = try
+        Environment.find x env
+      with
+      | Not_found -> raise @@ Type_error (Printf.sprintf "variable '%s' not found in the environment" x)
+      in
       t, Constraints.empty
   | Const c ->
       let t = begin match c with
