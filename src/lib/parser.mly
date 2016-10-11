@@ -2,9 +2,9 @@
 open Syntax
 %}
 
-%token LPAREN RPAREN SEMISEMI COLON
+%token LPAREN RPAREN SEMISEMI COLON SLASH
 %token PLUS QUESTION
-%token FUN RARROW TRUE FALSE INT BOOL
+%token FUN RARROW TRUE FALSE INT BOOL SHIFT RESET
 
 %token <int> INTV
 %token <Syntax.id> ID
@@ -17,8 +17,13 @@ toplevel :
   | Expr SEMISEMI { $1 }
 
 Expr :
+  | SRExpr { $1 }
   | FunExpr { $1 }
   | PExpr { $1 }
+
+SRExpr :
+  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN { ResetI $7 }
+  | SHIFT LPAREN FUN ID RARROW Expr RPAREN { ShiftI ($4, $6) }
 
 PExpr :
   | PExpr PLUS AppExpr { BinOp (Plus, $1, $3) }
@@ -43,7 +48,7 @@ Type :
   | FunType { $1 }
 
 FunType :
-  | AType RARROW FunType { TyFun ($1, $3) }
+  | AType SLASH FunType RARROW FunType SLASH FunType  { TyFun ($1, $3, $5, $7) }
   | AType { $1 }
 
 AType :

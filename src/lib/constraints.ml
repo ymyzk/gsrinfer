@@ -23,7 +23,7 @@ let string_of_constraints c =
 
 (* [x:=t]u *)
 let rec subst_type (x : tyvar) (t : ty) = function
-  | TyFun (u1, u2) -> TyFun (subst_type x t u1, subst_type x t u2)
+  | TyFun (u1, u2, u3, u4) -> TyFun (subst_type x t u1, subst_type x t u2, subst_type x t u3, subst_type x t u4)
   | TyVar x' when x = x' -> t
   | _ as u -> u
 

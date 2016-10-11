@@ -10,7 +10,7 @@ type ty =
   | TyVar of tyvar
   | TyBool
   | TyInt
-  | TyFun of ty * ty
+  | TyFun of ty * ty * ty * ty
   | TyDyn
 
 let string_of_type t =
@@ -29,13 +29,41 @@ let string_of_type t =
     | TyVar x -> "'x" ^ string_of_int x
     | TyBool -> "bool"
     | TyInt -> "int"
-    | TyFun (t1, t2) ->
+    | TyFun (t1, t2, t3, t4) ->
         let s1 = string_of_type t1 in
-        let s1 = (match t1 with TyFun _ -> sprintf "(%s)" s1 | _ -> s1) in
-        sprintf "%s -> %s" s1 (string_of_type t2)
+        let s2 = string_of_type t2 in
+        let s3 = string_of_type t3 in
+        let s4 = string_of_type t4 in
+(*         let s1 = (match t1 with TyFun _ -> sprintf "(%s)" s1 | _ -> s1) in *)
+        sprintf "(%s/%s -> %s/%s)" s1 s2 s3 s4
     | TyDyn -> "?"
   in
   string_of_type t
+
+let string_of_type2 t =
+  let params = ref [] in
+  let string_of_typaram tp =
+    let rec string_of_typaram i = function
+      | [] -> params := !params @ [tp]; i
+      | x :: _ when x = tp -> i
+      | _ :: params -> string_of_typaram (i + 1) params
+    in
+    let i = string_of_typaram 0 !params in
+    "'" ^ String.make 1 @@ char_of_int @@ (int_of_char 'a') + i
+  in
+  let rec string_of_type2 = function
+    | TyParam tp -> string_of_typaram tp
+    | TyVar x -> "'x" ^ string_of_int x
+    | TyBool -> "bool"
+    | TyInt -> "int"
+    | TyFun (t1, t2, t3, t4) ->
+        let s1 = string_of_type2 t1 in
+        let s3 = string_of_type2 t3 in
+        let s1 = (match t1 with TyFun _ -> sprintf "(%s)" s1 | _ -> s1) in
+        sprintf "%s -> %s" s1 s3
+    | TyDyn -> "?"
+  in
+  string_of_type2 t
 
 (* Syntax *)
 
@@ -58,6 +86,8 @@ type exp =
   | FunI of id * exp
   | FunE of id * ty * exp
   | App of exp * exp
+  | ShiftI of id * exp
+  | ResetI of exp
 
 let rec string_of_exp = function
   | Var id -> id
@@ -67,6 +97,7 @@ let rec string_of_exp = function
   | FunI (x, e) -> sprintf "λ%s.%s" x (string_of_exp e)
   | FunE (x, x_t, e) -> sprintf "λ%s:%s.%s" x (string_of_type x_t) (string_of_exp e)
   | App (x, y) -> sprintf "(%s %s)" (string_of_exp x) (string_of_exp y)
+  | ShiftI _ | ResetI _ -> raise @@ Failure "not implemented 1"
 
 (* Type Environment *)
 

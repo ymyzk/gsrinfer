@@ -6,6 +6,8 @@ let reservedWords = [
   ("false", Parser.FALSE);
   ("int", Parser.INT);
   ("bool", Parser.BOOL);
+  ("shift", Parser.SHIFT);
+  ("reset", Parser.RESET);
 ]
 
 }
@@ -19,6 +21,7 @@ rule main = parse
 | ":" { Parser.COLON }
 | ";;" { Parser.SEMISEMI }
 | "->" { Parser.RARROW }
+| "/" { Parser.SLASH }
 | "+" { Parser.PLUS }
 | "?" { Parser.QUESTION }
 
