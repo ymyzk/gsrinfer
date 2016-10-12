@@ -218,6 +218,21 @@ let generate_constraints env e =
       let g2, g1, b, c = generate_constraints env' e in
       let c = Constraints.add (ConstrConsistent (g1, g2)) c in
       x, x_a, b, c
+  | ShiftE (k, k_t, e) ->
+      let x_d1, x_d2 = fresh_tyvar (), fresh_tyvar () in
+      let env' = Environment.add k k_t env in
+      let g2, g1, b, c1 = generate_constraints env' e in
+      let x, c2 = generate_constraints_codomain k_t in
+      let x_a, c3 = generate_constraints_codc k_t in
+      let c4 = generate_constraints_domain k_t x_d1 in
+      let c5 = generate_constraints_codf k_t x_d2 in
+      let c = Constraints.union c1 c2 in
+      let c = Constraints.union c c3 in
+      let c = Constraints.union c c4 in
+      let c = Constraints.union c c5 in
+      let c = Constraints.add (ConstrConsistent (g1, g2)) c in
+      let c = Constraints.add (ConstrEqual (x_d1, x_d2)) c in
+      x, x_a, b, c
   | ResetI e ->
       let x = fresh_tyvar () in
       let g2, g1, t, c = generate_constraints env e in

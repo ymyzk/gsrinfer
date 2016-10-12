@@ -18,16 +18,15 @@ toplevel :
 
 Expr :
   | IfExpr { $1 }
-  | SRExpr { $1 }
   | FunExpr { $1 }
   | PExpr { $1 }
 
 IfExpr :
   | IF Expr THEN Expr ELSE Expr { If ($2, $4, $6) }
 
-SRExpr :
-  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN { ResetI $7 }
-  | SHIFT LPAREN FUN ID RARROW Expr RPAREN { ShiftI ($4, $6) }
+FunExpr :
+  | FUN ID RARROW Expr { FunI ($2, $4) }
+  | FUN LPAREN ID COLON Type RPAREN RARROW Expr { FunE ($3, $5, $8) }
 
 PExpr :
   | PExpr PLUS AppExpr { BinOp (Plus, $1, $3) }
@@ -35,6 +34,12 @@ PExpr :
 
 AppExpr :
   | AppExpr AExpr { App ($1, $2) }
+  | SRExpr { $1 }
+
+SRExpr :
+  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN { ResetI $7 }
+  | SHIFT LPAREN FUN ID RARROW Expr RPAREN { ShiftI ($4, $6) }
+  | SHIFT LPAREN FUN LPAREN ID COLON Type RPAREN RARROW Expr RPAREN { ShiftE ($5, $7, $10) }
   | AExpr { $1 }
 
 AExpr :
@@ -44,10 +49,6 @@ AExpr :
   | LPAREN RPAREN { Const ConstUnit }
   | ID { Var $1 }
   | LPAREN Expr RPAREN { $2 }
-
-FunExpr :
-  | FUN ID RARROW Expr { FunI ($2, $4) }
-  | FUN LPAREN ID COLON Type RPAREN RARROW Expr { FunE ($3, $5, $8) }
 
 Type :
   | FunType { $1 }

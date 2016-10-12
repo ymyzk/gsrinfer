@@ -92,6 +92,7 @@ type exp =
   | FunE of id * ty * exp
   | App of exp * exp
   | ShiftI of id * exp
+  | ShiftE of id * ty * exp
   | ResetI of exp
   | If of exp * exp * exp
 
@@ -103,7 +104,7 @@ let rec string_of_exp = function
   | FunI (x, e) -> sprintf "λ%s.%s" x (string_of_exp e)
   | FunE (x, x_t, e) -> sprintf "λ%s:%s.%s" x (string_of_type x_t) (string_of_exp e)
   | App (x, y) -> sprintf "(%s %s)" (string_of_exp x) (string_of_exp y)
-  | ShiftI _ | ResetI _ | If _ -> raise @@ Failure "not implemented 1"
+  | ShiftI _ | ShiftE _ | ResetI _ | If _ -> raise @@ Failure "not implemented 1"
 
 (* Type Environment *)
 
