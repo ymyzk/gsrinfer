@@ -48,7 +48,7 @@ Type :
   | FunType { $1 }
 
 FunType :
-  | AType SLASH FunType RARROW FunType SLASH FunType  { TyFun ($1, $3, $5, $7) }
+  | AType SLASH AType RARROW AType SLASH AType  { TyFun ($1, $3, $5, $7) }
   | AType { $1 }
 
 AType :
