@@ -11,7 +11,7 @@ let rec is_static_type = function
   | _ -> true
 
 let is_base_type = function
-  | TyInt | TyBool -> true
+  | TyInt | TyBool | TyUnit -> true
   | _ -> false
 
 let is_tyvar = function
@@ -146,6 +146,7 @@ let generate_constraints env e =
   let rec generate_constraints_join u1 u2 = match u1, u2 with
   | TyInt, TyInt -> TyInt, Constraints.empty
   | TyBool, TyBool -> TyBool, Constraints.empty
+  | TyUnit, TyUnit -> TyUnit, Constraints.empty
   | _, TyDyn -> u1, Constraints.singleton @@ ConstrConsistent (u1, TyDyn)
   | TyDyn, _ -> u2, Constraints.singleton @@ ConstrConsistent (TyDyn, u2)
   | TyVar _, _ -> u1, Constraints.singleton @@ ConstrConsistent (u1, u2)
@@ -174,6 +175,7 @@ let generate_constraints env e =
       let t = begin match c with
       | ConstBool b -> TyBool
       | ConstInt i -> TyInt
+      | ConstUnit -> TyUnit
       end in
       let x = fresh_tyvar () in
       t, x, x, Constraints.empty

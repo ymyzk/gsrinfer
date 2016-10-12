@@ -10,6 +10,7 @@ type ty =
   | TyVar of tyvar
   | TyBool
   | TyInt
+  | TyUnit
   | TyFun of ty * ty * ty * ty
   | TyDyn
 
@@ -29,6 +30,7 @@ let string_of_type t =
     | TyVar x -> "'x" ^ string_of_int x
     | TyBool -> "bool"
     | TyInt -> "int"
+    | TyUnit -> "unit"
     | TyFun (t1, t2, t3, t4) ->
         let s1 = string_of_type t1 in
         let s2 = string_of_type t2 in
@@ -56,6 +58,7 @@ let string_of_type2 t =
     | TyVar x -> "'x" ^ string_of_int x
     | TyBool -> "bool"
     | TyInt -> "int"
+    | TyUnit -> "unit"
     | TyFun (t1, t2, t3, t4) ->
         let s1 = string_of_type2 t1 in
         let s3 = string_of_type2 t3 in
@@ -72,10 +75,12 @@ type id = string
 type const =
   | ConstBool of bool
   | ConstInt of int
+  | ConstUnit
 
 let string_of_const = function
   | ConstBool b -> string_of_bool b
   | ConstInt i -> string_of_int i
+  | ConstUnit -> "()"
 
 type binop = Plus
 

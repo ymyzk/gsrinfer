@@ -41,6 +41,7 @@ AExpr :
   | INTV { Const (ConstInt $1) }
   | TRUE { Const (ConstBool true) }
   | FALSE { Const (ConstBool false) }
+  | LPAREN RPAREN { Const ConstUnit }
   | ID { Var $1 }
   | LPAREN Expr RPAREN { $2 }
 
