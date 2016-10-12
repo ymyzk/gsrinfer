@@ -8,6 +8,9 @@ let reservedWords = [
   ("bool", Parser.BOOL);
   ("shift", Parser.SHIFT);
   ("reset", Parser.RESET);
+  ("if", Parser.IF);
+  ("then", Parser.THEN);
+  ("else", Parser.ELSE);
 ]
 
 }

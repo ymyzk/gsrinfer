@@ -143,6 +143,24 @@ let generate_constraints env e =
   | TyDyn -> Constraints.singleton @@ ConstrConsistent (u1, u2)
   | _ -> raise @@ Type_error "error"
   in
+  let rec generate_constraints_join u1 u2 = match u1, u2 with
+  | TyInt, TyInt -> TyInt, Constraints.empty
+  | TyBool, TyBool -> TyBool, Constraints.empty
+  | _, TyDyn -> u1, Constraints.singleton @@ ConstrConsistent (u1, TyDyn)
+  | TyDyn, _ -> u2, Constraints.singleton @@ ConstrConsistent (TyDyn, u2)
+  | TyVar _, _ -> u1, Constraints.singleton @@ ConstrConsistent (u1, u2)
+  | _, TyVar _ -> u2, Constraints.singleton @@ ConstrConsistent (u1, u2)
+  | TyFun (u11, u12, u13, u14), TyFun (u21, u22, u23, u24) ->
+      let u1, c1 = generate_constraints_join u11 u21 in
+      let u2, c2 = generate_constraints_join u12 u22 in
+      let u3, c3 = generate_constraints_join u13 u23 in
+      let u4, c4 = generate_constraints_join u14 u24 in
+      let c = Constraints.union c1 c2 in
+      let c = Constraints.union c c3 in
+      let c = Constraints.union c c4 in
+      TyFun (u1, u2, u3, u4), c
+  | _ -> raise @@ Type_error "error: generate_constraints_join"
+  in
   let rec generate_constraints env e = match e with
   | Var x ->
       let t = try
@@ -203,6 +221,19 @@ let generate_constraints env e =
       let g2, g1, t, c = generate_constraints env e in
       let c = Constraints.add (ConstrConsistent (g1, g2)) c in
       t, x, x, c
+  | If (e0, e1, e2) ->
+      let t0, d0, b, c0 = generate_constraints env e0 in
+      let t1, a1, d1, c1 = generate_constraints env e1 in
+      let t2, a2, d2, c2 = generate_constraints env e2 in
+      let a, c3 = generate_constraints_join a1 a2 in
+      let t, c4 = generate_constraints_join t1 t2 in
+      let c = Constraints.union c1 c2 in
+      let c = Constraints.union c c3 in
+      let c = Constraints.union c c4 in
+      let c = Constraints.add (ConstrConsistent (t0, TyBool)) c in
+      let c = Constraints.add (ConstrEqual (d0, d1)) c in
+      let c = Constraints.add (ConstrEqual (d1, d2)) c in
+      t, a, b, c
   in
   generate_constraints env e
 

@@ -4,7 +4,7 @@ open Syntax
 
 %token LPAREN RPAREN SEMISEMI COLON SLASH
 %token PLUS QUESTION
-%token FUN RARROW TRUE FALSE INT BOOL SHIFT RESET
+%token FUN RARROW TRUE FALSE INT BOOL SHIFT RESET IF THEN ELSE
 
 %token <int> INTV
 %token <Syntax.id> ID
@@ -17,9 +17,13 @@ toplevel :
   | Expr SEMISEMI { $1 }
 
 Expr :
+  | IfExpr { $1 }
   | SRExpr { $1 }
   | FunExpr { $1 }
   | PExpr { $1 }
+
+IfExpr :
+  | IF Expr THEN Expr ELSE Expr { If ($2, $4, $6) }
 
 SRExpr :
   | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN { ResetI $7 }
