@@ -37,17 +37,16 @@
 
 #
 # This project requires ocamlfind (default - false).
-#
-# USE_OCAMLFIND = true
-#
-# OCAMLPACKS[] =
-#    pack1
-#    pack2
-#
-# if $(not $(OCAMLFIND_EXISTS))
-#    eprintln(This project requires ocamlfind, but is was not found.)
-#    eprintln(You need to install ocamlfind and run "omake --configure".)
-#    exit 1
+
+USE_OCAMLFIND = true
+
+OCAMLPACKS[] =
+   core
+
+if $(not $(OCAMLFIND_EXISTS))
+   eprintln(This project requires ocamlfind, but is was not found.)
+   eprintln(You need to install ocamlfind and run "omake --configure".)
+   exit 1
 
 #
 # Include path
@@ -65,7 +64,7 @@ BYTE_ENABLED = $(not $(OCAMLOPT_EXISTS))
 #
 # Various options
 #
-# OCAMLFLAGS    +=
+OCAMLFLAGS    += -thread
 # OCAMLCFLAGS   +=
 # OCAMLOPTFLAGS +=
 # OCAML_LINK_FLAGS +=

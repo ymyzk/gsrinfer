@@ -1,3 +1,5 @@
+open Core.Std
+
 open Printf
 open Syntax
 
@@ -7,7 +9,7 @@ let parse_string s =
   e
 
 let test1 s =
-  let empty = Environment.empty in
+  let empty = String.Map.empty in
   let e = parse_string s in
   let u, a, b, c = Typing.generate_constraints empty e in
   print_endline "Constrait generation";

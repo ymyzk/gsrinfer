@@ -1,3 +1,4 @@
+open Core.Std
 open Printf
 
 (* Types *)
@@ -105,12 +106,3 @@ let rec string_of_exp = function
   | FunE (x, x_t, e) -> sprintf "λ%s:%s.%s" x (string_of_type x_t) (string_of_exp e)
   | App (x, y) -> sprintf "(%s %s)" (string_of_exp x) (string_of_exp y)
   | ShiftI _ | ShiftE _ | ResetI _ | If _ -> raise @@ Failure "not implemented 1"
-
-(* Type Environment *)
-
-module Environment = Map.Make (
-  struct
-    type t = id
-    let compare (x : id) y = compare x y
-  end
-)

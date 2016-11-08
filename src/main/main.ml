@@ -1,3 +1,4 @@
+open Core.Std
 open Printf
 open Typing
 
@@ -5,7 +6,7 @@ let rec read_type_print () =
   print_string "# ";
   flush stdout;
   try
-    let empty = Syntax.Environment.empty in
+    let empty = String.Map.empty in
     let e = Parser.toplevel Lexer.main @@ Lexing.from_channel stdin in
     print_endline @@ sprintf "- : %s" @@ Syntax.string_of_type @@ Typing.type_of_exp empty e;
     read_type_print ()
