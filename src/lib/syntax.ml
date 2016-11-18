@@ -102,7 +102,10 @@ let rec string_of_exp = function
   | Const c -> string_of_const c
   | BinOp (op, e1, e2) ->
       sprintf "%s + %s" (string_of_exp e1) (string_of_exp e2)
-  | FunI (x, e) -> sprintf "λ%s.%s" x (string_of_exp e)
-  | FunE (x, x_t, e) -> sprintf "λ%s:%s.%s" x (string_of_type x_t) (string_of_exp e)
+  | FunI (x, e) -> sprintf "fun %s -> %s" x (string_of_exp e)
+  | FunE (x, x_t, e) -> sprintf "fun (%s: %s) -> %s" x (string_of_type x_t) (string_of_exp e)
   | App (x, y) -> sprintf "(%s %s)" (string_of_exp x) (string_of_exp y)
-  | ShiftI _ | ShiftE _ | ResetI _ | If _ -> raise @@ Failure "not implemented 1"
+  | ShiftI (k, e) -> sprintf "shift (fun %s -> %s)" k (string_of_exp e)
+  | ShiftE (k, k_t, e) -> sprintf "shift (fun (%s: %s) -> %s)" k (string_of_type k_t) (string_of_exp e)
+  | ResetI e -> sprintf "reset (fun () -> %s)" @@ string_of_exp e
+  | If _ -> raise @@ Failure "not implemented 1"
