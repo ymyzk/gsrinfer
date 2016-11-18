@@ -171,7 +171,7 @@ let rec generate_constraints_join u1 u2 = match u1, u2 with
 
 let generate_constraints env e =
   let rec generate_constraints env e =
-    let e, a, b, c = match e with
+    let t, a, b, c = match e with
       | Var x -> begin
           match String.Map.find env x with
           | Some t ->
@@ -257,8 +257,12 @@ let generate_constraints env e =
           let c = Constraints.add (ConstrEqual (d1, d2)) c in
           t, a, b, c
     in
-    (* TODO: logging *)
-    e, a, b, c
+    (* logging *)
+    (*
+    print_endline @@ Printf.sprintf "%s; |- %s: %s; %s" (string_of_type a) (string_of_exp e) (string_of_type t) (string_of_type b);
+    print_endline @@ string_of_constraints c;
+    *)
+    t, a, b, c
   in
   generate_constraints env e
 
