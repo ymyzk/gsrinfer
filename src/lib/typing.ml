@@ -196,11 +196,11 @@ let generate_constraints env e =
           let c = Constraints.add (ConstrConsistent (u1, TyInt)) c in
           let c = Constraints.add (ConstrConsistent (u2, TyInt)) c in
           TyInt, a, g, c
-      | FunI (x, e) ->
+      | Fun (x, None, e) ->
           let x_a, x_t = fresh_tyvar (), fresh_tyvar () in
           let u, b, g, c = generate_constraints (String.Map.add env x x_t) e in
           TyFun (x_t, b, u, g), x_a, x_a, c
-      | FunE (x, x_t, e) ->
+      | Fun (x, Some x_t, e) ->
           let x_a = fresh_tyvar () in
           let u, b, g, c = generate_constraints (String.Map.add env x x_t) e in
           TyFun (x_t, b, u, g), x_a, x_a, c
@@ -218,13 +218,13 @@ let generate_constraints env e =
           let c = Constraints.union c c6 in
           let c = Constraints.add (ConstrEqual (g, g')) c in
           u, a, d, c
-      | ShiftI (k, e) ->
+      | Shift (k, None, e) ->
           let x, x_a, x_g = fresh_tyvar (), fresh_tyvar (), fresh_tyvar () in
           let env' = String.Map.add env k (TyFun (x, x_g, x_a, x_g)) in
           let d, d', b, c = generate_constraints env' e in
           let c = Constraints.add (ConstrConsistent (d, d')) c in
           x, x_a, b, c
-      | ShiftE (k, s, e) ->
+      | Shift (k, Some s, e) ->
           let d, d', b, c1 = generate_constraints (String.Map.add env k s) e in
           let a, c2 = generate_constraints_domc_eq s in
           let u, c3 = generate_constraints_domf_eq s in
@@ -238,7 +238,7 @@ let generate_constraints env e =
           let c = Constraints.union c c6 in
           let c = Constraints.add (ConstrEqual (d, d')) c in
           u, a, b, c
-      | ResetI e ->
+      | Reset e ->
           let x = fresh_tyvar () in
           let b, b', t, c = generate_constraints env e in
           let c = Constraints.add (ConstrConsistent (b, b')) c in
