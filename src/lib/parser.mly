@@ -25,8 +25,8 @@ IfExpr :
   | IF Expr THEN Expr ELSE Expr { If ($2, $4, $6) }
 
 FunExpr :
-  | FUN ID RARROW Expr { Fun ($2, None, $4) }
-  | FUN LPAREN ID COLON Type RPAREN RARROW Expr { Fun ($3, Some $5, $8) }
+  | FUN ID RARROW Expr { Fun (None, $2, None, $4) }
+  | FUN LPAREN ID COLON Type RPAREN RARROW Expr { Fun (None, $3, Some $5, $8) }
 
 PExpr :
   | PExpr PLUS AppExpr { BinOp (Plus, $1, $3) }
@@ -37,7 +37,7 @@ AppExpr :
   | SRExpr { $1 }
 
 SRExpr :
-  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN { Reset $7 }
+  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN { Reset ($7, None) }
   | SHIFT LPAREN FUN ID RARROW Expr RPAREN { Shift ($4, None, $6) }
   | SHIFT LPAREN FUN LPAREN ID COLON Type RPAREN RARROW Expr RPAREN { Shift ($5, Some $7, $10) }
   | AExpr { $1 }
@@ -48,7 +48,7 @@ AExpr :
   | FALSE { Const (ConstBool false) }
   | LPAREN RPAREN { Const ConstUnit }
   | ID { Var $1 }
-  | LPAREN Expr COLON COLON Type RPAREN { App (Fun ("x", Some $5, Var "x"), $2) }
+  | LPAREN Expr COLON COLON Type RPAREN { App (Fun (None, "x", Some $5, Var "x"), $2) }
   | LPAREN Expr RPAREN { $2 }
 
 Type :

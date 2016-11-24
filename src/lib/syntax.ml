@@ -89,10 +89,10 @@ type exp =
   | Var of id
   | Const of const
   | BinOp of binop * exp * exp
-  | Fun of id * ty option * exp (* λ1:2.3 *)
+  | Fun of ty option * id * ty option * exp (* λ^12:3.4 *)
   | App of exp * exp
   | Shift of id * ty option * exp (* S1:2.3 *)
-  | Reset of exp
+  | Reset of exp * ty option (* <1>^2 *)
   | If of exp * exp * exp
 
 let rec string_of_exp = function
@@ -100,10 +100,11 @@ let rec string_of_exp = function
   | Const c -> string_of_const c
   | BinOp (op, e1, e2) ->
       sprintf "%s + %s" (string_of_exp e1) (string_of_exp e2)
-  | Fun (x, None, e) -> sprintf "fun %s -> %s" x (string_of_exp e)
-  | Fun (x, Some x_t, e) -> sprintf "fun (%s: %s) -> %s" x (string_of_type x_t) (string_of_exp e)
+  | Fun (None, x, None, e) -> sprintf "fun %s -> %s" x (string_of_exp e)
+  | Fun (None, x, Some x_t, e) -> sprintf "fun (%s: %s) -> %s" x (string_of_type x_t) (string_of_exp e)
   | App (x, y) -> sprintf "(%s %s)" (string_of_exp x) (string_of_exp y)
   | Shift (k, None, e) -> sprintf "shift (fun %s -> %s)" k (string_of_exp e)
   | Shift (k, Some k_t, e) -> sprintf "shift (fun (%s: %s) -> %s)" k (string_of_type k_t) (string_of_exp e)
-  | Reset e -> sprintf "reset (fun () -> %s)" @@ string_of_exp e
+  | Reset (e, None) -> sprintf "reset (fun () -> %s)" @@ string_of_exp e
   | If _ -> raise @@ Failure "not implemented 1"
+  | _ -> raise @@ Failure "not implemented expression"

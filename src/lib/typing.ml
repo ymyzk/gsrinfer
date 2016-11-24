@@ -196,11 +196,11 @@ let generate_constraints env e =
           let c = Constraints.add (ConstrConsistent (u1, TyInt)) c in
           let c = Constraints.add (ConstrConsistent (u2, TyInt)) c in
           TyInt, a, g, c
-      | Fun (x, None, e) ->
+      | Fun (None, x, None, e) ->
           let x_a, x_t = fresh_tyvar (), fresh_tyvar () in
           let u, b, g, c = generate_constraints (String.Map.add env x x_t) e in
           TyFun (x_t, b, u, g), x_a, x_a, c
-      | Fun (x, Some x_t, e) ->
+      | Fun (None, x, Some x_t, e) ->
           let x_a = fresh_tyvar () in
           let u, b, g, c = generate_constraints (String.Map.add env x x_t) e in
           TyFun (x_t, b, u, g), x_a, x_a, c
@@ -238,7 +238,7 @@ let generate_constraints env e =
           let c = Constraints.union c c6 in
           let c = Constraints.add (ConstrEqual (d, d')) c in
           u, a, b, c
-      | Reset e ->
+      | Reset (e, None) ->
           let x = fresh_tyvar () in
           let b, b', t, c = generate_constraints env e in
           let c = Constraints.add (ConstrConsistent (b, b')) c in
@@ -256,6 +256,7 @@ let generate_constraints env e =
           let c = Constraints.add (ConstrEqual (d0, d1)) c in
           let c = Constraints.add (ConstrEqual (d1, d2)) c in
           t, a, b, c
+      | _ -> raise @@ Failure "not implemented constraits"
     in
     (* logging *)
     (*
