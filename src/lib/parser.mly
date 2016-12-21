@@ -40,7 +40,7 @@ PExpr :
   | AppExpr { $1 }
 
 AppExpr :
-  | AppExpr AExpr { App ($1, $2) }
+  | AppExpr SRExpr { App ($1, $2) }
   | SRExpr { $1 }
 
 SRExpr :
