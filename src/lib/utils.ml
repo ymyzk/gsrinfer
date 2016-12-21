@@ -8,6 +8,7 @@ let parse_string s =
   let e = Parser.toplevel Lexer.main lexbuf in
   e
 
+(*
 let test1 s =
   let empty = String.Map.empty in
   let e = parse_string s in
@@ -33,3 +34,4 @@ let test1 s =
   print_endline @@ sprintf "β: %s" @@ Syntax.string_of_type @@ Typing.type_of_exp empty b;
 *)
   print_endline ""
+*)
