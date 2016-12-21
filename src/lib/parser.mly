@@ -3,7 +3,7 @@ open Syntax
 %}
 
 %token LPAREN RPAREN SEMISEMI COLON SLASH
-%token PLUS QUESTION
+%token PLUS MINUS QUESTION
 %token FUN RARROW TRUE FALSE INT BOOL SHIFT RESET
 (*
 %token IF THEN ELSE
@@ -37,6 +37,7 @@ FunExpr :
 
 PExpr :
   | PExpr PLUS AppExpr { BinOp (Plus, $1, $3) }
+  | PExpr MINUS AppExpr { BinOp (Minus, $1, $3) }
   | AppExpr { $1 }
 
 AppExpr :

@@ -82,7 +82,9 @@ let string_of_const = function
   | ConstInt i -> string_of_int i
   | ConstUnit -> "()"
 
-type binop = Plus
+type binop =
+  | Plus
+  | Minus
 
 type exp =
   | Var of id

@@ -26,6 +26,7 @@ rule main = parse
 | ":" { Parser.COLON }
 | ";;" { Parser.SEMISEMI }
 | "->" { Parser.RARROW }
+| "-" { Parser.MINUS }
 | "/" { Parser.SLASH }
 | "+" { Parser.PLUS }
 | "?" { Parser.QUESTION }
