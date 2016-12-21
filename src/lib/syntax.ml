@@ -1,4 +1,3 @@
-open Core.Std
 open Printf
 
 (* Types *)
@@ -108,3 +107,12 @@ let rec string_of_exp = function
   | Reset (e, None) -> sprintf "reset (fun () -> %s)" @@ string_of_exp e
   | If _ -> raise @@ Failure "not implemented 1"
   | _ -> raise @@ Failure "not implemented expression"
+
+(* Type Environment *)
+
+module Environment = Map.Make (
+  struct
+    type t = id
+    let compare (x : id) y = compare x y
+  end
+)

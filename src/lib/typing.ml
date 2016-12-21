@@ -1,5 +1,3 @@
-open Core.Std
-
 open Constraints
 open Syntax
 
@@ -14,7 +12,7 @@ let rec is_static_type = function
   | _ -> true
 
 (* ty list -> bool *)
-let is_static_types types = List.fold_left ~init:true ~f:(&&) @@ List.map ~f:is_static_type types
+let is_static_types types = List.fold_left (&&) true @@ List.map is_static_type types
 
 let is_base_type = function
   | TyInt | TyBool | TyUnit -> true
@@ -33,6 +31,13 @@ let is_bvp_type t = is_base_type t || is_tyvar t || is_typaram t
 
 (* Type Variables *)
 
+module Variables = Set.Make(
+  struct
+    type t = tyvar
+    let compare (x : tyvar) y = compare x y
+  end
+)
+
 let fresh_tyvar =
   let counter = ref 0 in
   let body () =
@@ -42,13 +47,13 @@ let fresh_tyvar =
   in body
 
 let rec tyvars = function
-  | TyVar x -> Int.Set.singleton x
+  | TyVar x -> Variables.singleton x
   | TyFun (t1, t2, t3, t4) ->
-      let vars = Int.Set.union (tyvars t1) (tyvars t2) in
-      let vars = Int.Set.union vars (tyvars t3) in
-      let vars = Int.Set.union vars (tyvars t4) in
+      let vars = Variables.union (tyvars t1) (tyvars t2) in
+      let vars = Variables.union vars (tyvars t3) in
+      let vars = Variables.union vars (tyvars t4) in
       vars
-  | _ -> Int.Set.empty
+  | _ -> Variables.empty
 
 (* Substitutions *)
 
@@ -59,10 +64,10 @@ let string_of_substitution (x, t) =
   Printf.sprintf "x%d=%s" x @@ string_of_type t
 
 let string_of_substitutions s =
-  String.concat ~sep:", " @@ List.map s string_of_substitution
+  String.concat ", " @@ List.map string_of_substitution s
 
 let subst_type_substitutions (t : ty) (s : substitutions) =
-  List.fold_left s ~init:t ~f:(fun u -> fun (x, t) -> subst_type x t u)
+  List.fold_left (fun u -> fun (x, t) -> subst_type x t u) t s
 
 let fresh_typaram =
   let counter = ref 0 in
@@ -72,19 +77,22 @@ let fresh_typaram =
     TyParam (v + 1)
   in body
 
+module TyVarMap = Map.Make(
+  struct
+    type t = tyvar
+    let compare (x : tyvar) y = compare x y
+  end
+)
+
 let rec subst_tyvar t m = match t with
-  | TyVar x -> Int.Map.find_exn m x
+  | TyVar x -> TyVarMap.find x m
   | TyFun (t1, t2, t3, t4) -> TyFun (subst_tyvar t1 m, subst_tyvar t2 m, subst_tyvar t3 m, subst_tyvar t4 m)
   | _ -> t
 
 (* Create map from type parameters to type variables *)
 let create_tyvar_typaram_map t =
-  Int.Set.fold (tyvars t) ~init:Int.Map.empty ~f:(fun m x ->
-    if Int.Map.mem m x then
-      m
-    else
-      Int.Map.add m x (fresh_typaram ())
-  )
+  let f x m = if TyVarMap.mem x m then m else TyVarMap.add x (fresh_typaram ()) m in
+  Variables.fold f (tyvars t) TyVarMap.empty
 
 (* Replace type variables with type parameters *)
 let subst_tyvars (t : ty) : ty =
@@ -174,13 +182,9 @@ let generate_constraints env e =
     let t, a, c = match e with
       | Var x ->
           let u_a = b in
-          begin
-            match String.Map.find env x with
-            | Some u ->
-                u, u_a, Constraints.empty
-            | None ->
-                raise @@ Type_error (Printf.sprintf "variable '%s' not found in the environment" x)
-          end
+          (* TODO error handling *)
+(*                 raise @@ Type_error (Printf.sprintf "variable '%s' not found in the environment" x) *)
+          (Environment.find x env), u_a, Constraints.empty
       | Const c ->
           let u_a = b in
           let u = begin
@@ -204,12 +208,12 @@ let generate_constraints env e =
       | Fun (None, x, None, e) ->
           let u_a = b in
           let x_x, x_g = fresh_tyvar (), fresh_tyvar () in
-          let u, u_b, c = generate_constraints (String.Map.add env x x_x) e x_g in
+          let u, u_b, c = generate_constraints (Environment.add x x_x env) e x_g in
           TyFun (x_x, u_b, u, x_g), u_a, c
       | Fun (None, x, Some u_1, e) ->
           let u_a = b in
           let x_g = fresh_tyvar () in
-          let u_2, u_b, c = generate_constraints (String.Map.add env x u_1) e x_g in
+          let u_2, u_b, c = generate_constraints (Environment.add x u_1 env) e x_g in
           TyFun (u_1, u_b, u_2, x_g), u_a, c
       | App (e1, e2) ->
           let u_d = b in
@@ -228,13 +232,13 @@ let generate_constraints env e =
       | Shift (k, None, e) ->
           let u_b = b in
           let x_x, x_a, x_g = fresh_tyvar (), fresh_tyvar (), fresh_tyvar () in
-          let env' = String.Map.add env k (TyFun (x_x, x_g, x_a, x_g)) in
+          let env' = Environment.add k (TyFun (x_x, x_g, x_a, x_g)) env in
           let u_d, u_d', c = generate_constraints env' e u_b in
           let c = Constraints.add (ConstrConsistent (u_d, u_d')) c in
           x_x, x_a, c
       | Shift (k, Some u_s, e) ->
           let u_b = b in
-          let u_d, u_d', c1 = generate_constraints (String.Map.add env k u_s) e u_b in
+          let u_d, u_d', c1 = generate_constraints (Environment.add k u_s env) e u_b in
           let u_a, c2 = generate_constraints_domc_eq u_s in
           let u, c3 = generate_constraints_domf_eq u_s in
           let u_g1, c4 = generate_constraints_codc_eq u_s in
@@ -301,7 +305,7 @@ let unify constraints : substitutions =
           unify @@ ConstrConsistent (TyVar x, u) :: c
       | ConstrConsistent (TyVar x, u) when is_bvp_type u ->
           unify @@ ConstrEqual (TyVar x, u) :: c
-      | ConstrConsistent (TyVar x, TyFun (u1, u2, u3, u4)) when not @@ Int.Set.mem (tyvars (TyFun (u1, u2, u3, u4))) x ->
+      | ConstrConsistent (TyVar x, TyFun (u1, u2, u3, u4)) when not @@ Variables.mem x (tyvars (TyFun (u1, u2, u3, u4))) ->
           let x1, x2, x3, x4 = fresh_tyvar (), fresh_tyvar (), fresh_tyvar (), fresh_tyvar () in
           unify @@ ConstrEqual (TyVar x, TyFun (x1, x2, x3, x4)) :: ConstrConsistent (x1, u1) :: ConstrConsistent (x2, u2) :: ConstrConsistent (x3, u3) :: ConstrConsistent (x4, u4) :: c
       | ConstrEqual (t1, t2) when t1 = t2 && is_static_type t1 && is_bvp_type t1 ->
@@ -310,7 +314,7 @@ let unify constraints : substitutions =
           unify @@ ConstrEqual (t11, t21) :: ConstrEqual (t12, t22) :: ConstrEqual (t13, t23) :: ConstrEqual (t14, t24) :: c
       | ConstrEqual (t, TyVar x) when is_static_type t && not (is_tyvar t) ->
           unify @@ ConstrEqual (TyVar x, t) :: c
-      | ConstrEqual (TyVar x, t) when not @@ Int.Set.mem (tyvars t) x ->
+      | ConstrEqual (TyVar x, t) when not @@ Variables.mem x (tyvars t) ->
           let s = unify @@ subst_type_constraints x t c in
           (x, t) :: s
       | _ ->

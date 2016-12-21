@@ -9,10 +9,12 @@ let test_string_of_type =
       "bool", TyBool, "bool";
       "int", TyInt, "int";
       "?", TyDyn, "?";
-      "int -> bool", TyFun (TyInt, TyBool), "int -> bool";
+      "int/unit -> bool/int", TyFun (TyInt, TyUnit, TyBool, TyInt), "(int/unit -> bool/int)";
+(*
       "int -> ?", TyFun (TyInt, TyDyn), "int -> ?";
       "'a -> 'b", TyFun (TyParam 1, TyParam 0), "'a -> 'b";
       "'a -> 'b", TyFun (TyFun (TyParam 1, TyParam 0), TyParam 2), "('a -> 'b) -> 'c";
+*)
     ]
 
 (*
