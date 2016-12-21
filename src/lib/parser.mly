@@ -2,7 +2,7 @@
 open Syntax
 %}
 
-%token LPAREN RPAREN SEMISEMI COLON SLASH
+%token LPAREN RPAREN SEMISEMI COLON SLASH CARET
 %token PLUS MINUS QUESTION
 %token FUN RARROW TRUE FALSE INT BOOL SHIFT RESET
 (*
@@ -33,7 +33,9 @@ IfExpr :
 
 FunExpr :
   | FUN ID RARROW Expr { Fun (None, $2, None, $4) }
+  | FUN CARET Type ID RARROW Expr { Fun (Some $3, $4, None, $6) }
   | FUN LPAREN ID COLON Type RPAREN RARROW Expr { Fun (None, $3, Some $5, $8) }
+  | FUN CARET Type LPAREN ID COLON Type RPAREN RARROW Expr { Fun (Some $3, $5, Some $7, $10) }
 
 PExpr :
   | PExpr PLUS AppExpr { BinOp (Plus, $1, $3) }
@@ -46,6 +48,7 @@ AppExpr :
 
 SRExpr :
   | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN { Reset ($7, None) }
+  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN CARET Type { Reset ($7, Some $10) }
   | SHIFT LPAREN FUN ID RARROW Expr RPAREN { Shift ($4, None, $6) }
   | SHIFT LPAREN FUN LPAREN ID COLON Type RPAREN RARROW Expr RPAREN { Shift ($5, Some $7, $10) }
   | AExpr { $1 }

@@ -30,6 +30,7 @@ rule main = parse
 | "/" { Parser.SLASH }
 | "+" { Parser.PLUS }
 | "?" { Parser.QUESTION }
+| "^" { Parser.CARET }
 
 | ['a'-'z'] ['a'-'z' '0'-'9' '_' '\'']*
   {
