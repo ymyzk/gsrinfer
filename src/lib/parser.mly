@@ -14,6 +14,7 @@ open Syntax
 
 %start toplevel
 %type <Syntax.exp> toplevel
+
 %%
 
 toplevel :
@@ -32,10 +33,8 @@ IfExpr :
 *)
 
 FunExpr :
-  | FUN ID RARROW Expr { Fun (None, $2, None, $4) }
-  | FUN CARET Type ID RARROW Expr { Fun (Some $3, $4, None, $6) }
-  | FUN LPAREN ID COLON Type RPAREN RARROW Expr { Fun (None, $3, Some $5, $8) }
-  | FUN CARET Type LPAREN ID COLON Type RPAREN RARROW Expr { Fun (Some $3, $5, Some $7, $10) }
+  | FUN OptionalAnswerTypeAnnot ID RARROW Expr { Fun ($2, $3, None, $5) }
+  | FUN OptionalAnswerTypeAnnot LPAREN ID COLON Type RPAREN RARROW Expr { Fun ($2, $4, Some $6, $9) }
 
 PExpr :
   | PExpr PLUS AppExpr { BinOp (Plus, $1, $3) }
@@ -47,8 +46,7 @@ AppExpr :
   | SRExpr { $1 }
 
 SRExpr :
-  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN { Reset ($7, None) }
-  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN CARET Type { Reset ($7, Some $10) }
+  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN OptionalAnswerTypeAnnot { Reset ($7, $9) }
   | SHIFT LPAREN FUN ID RARROW Expr RPAREN { Shift ($4, None, $6) }
   | SHIFT LPAREN FUN LPAREN ID COLON Type RPAREN RARROW Expr RPAREN { Shift ($5, Some $7, $10) }
   | AExpr { $1 }
@@ -63,9 +61,6 @@ AExpr :
   | LPAREN Expr RPAREN { $2 }
 
 Type :
-  | FunType { $1 }
-
-FunType :
   | AType SLASH AType RARROW AType SLASH AType  { TyFun ($1, $3, $5, $7) }
   | AType { $1 }
 
@@ -74,3 +69,7 @@ AType :
   | INT { TyInt }
   | BOOL { TyBool }
   | QUESTION { TyDyn }
+
+OptionalAnswerTypeAnnot :
+  | { None }
+  | CARET Type { Some $2 }
