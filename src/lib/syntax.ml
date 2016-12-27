@@ -32,41 +32,14 @@ let string_of_type t =
     | TyInt -> "int"
     | TyUnit -> "unit"
     | TyFun (t1, t2, t3, t4) ->
-        let s1 = string_of_type t1 in
-        let s2 = string_of_type t2 in
-        let s3 = string_of_type t3 in
-        let s4 = string_of_type t4 in
-(*         let s1 = (match t1 with TyFun _ -> sprintf "(%s)" s1 | _ -> s1) in *)
-        sprintf "(%s/%s -> %s/%s)" s1 s2 s3 s4
+        let s1 = sprintf (match t1 with TyFun _ -> "(%s)" | _ -> "%s") @@ string_of_type t1 in
+        let s2 = sprintf (match t2 with TyFun _ -> "(%s)" | _ -> "%s") @@ string_of_type t2 in
+        let s3 = sprintf (match t3 with TyFun _ -> "(%s)" | _ -> "%s") @@ string_of_type t3 in
+        let s4 = sprintf (match t4 with TyFun _ -> "(%s)" | _ -> "%s") @@ string_of_type t4 in
+        sprintf "%s/%s -> %s/%s" s1 s2 s3 s4
     | TyDyn -> "?"
   in
   string_of_type t
-
-let string_of_type2 t =
-  let params = ref [] in
-  let string_of_typaram tp =
-    let rec string_of_typaram i = function
-      | [] -> params := !params @ [tp]; i
-      | x :: _ when x = tp -> i
-      | _ :: params -> string_of_typaram (i + 1) params
-    in
-    let i = string_of_typaram 0 !params in
-    "'" ^ String.make 1 @@ char_of_int @@ (int_of_char 'a') + i
-  in
-  let rec string_of_type2 = function
-    | TyParam tp -> string_of_typaram tp
-    | TyVar x -> "'x" ^ string_of_int x
-    | TyBool -> "bool"
-    | TyInt -> "int"
-    | TyUnit -> "unit"
-    | TyFun (t1, t2, t3, t4) ->
-        let s1 = string_of_type2 t1 in
-        let s3 = string_of_type2 t3 in
-        let s1 = (match t1 with TyFun _ -> sprintf "(%s)" s1 | _ -> s1) in
-        sprintf "%s -> %s" s1 s3
-    | TyDyn -> "?"
-  in
-  string_of_type2 t
 
 (* Syntax *)
 

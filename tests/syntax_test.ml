@@ -2,18 +2,34 @@ open OUnit2
 
 open Syntax
 
+let id x = x
+
 let test_string_of_type =
   List.map
-    (fun (l, t, e) -> l >:: fun test_ctxt -> assert_equal (string_of_type t) e)
+    (fun (e, t) -> e >:: fun test_ctxt -> assert_equal ~printer:id e (string_of_type t))
+    [
+      "'a", TyParam 1;
+      "bool", TyBool;
+      "int", TyInt;
+      "?", TyDyn;
+      "int/unit -> bool/int", TyFun (TyInt, TyUnit, TyBool, TyInt);
+      "(int/'a -> 'a/'b)/unit -> bool/int",
+      TyFun (TyFun (TyInt, TyParam 1, TyParam 1, TyParam 2), TyUnit, TyBool, TyInt);
+    ]
+
     [
       "bool", TyBool, "bool";
       "int", TyInt, "int";
       "?", TyDyn, "?";
       "int/unit -> bool/int", TyFun (TyInt, TyUnit, TyBool, TyInt), "(int/unit -> bool/int)";
 (*
-      "int -> ?", TyFun (TyInt, TyDyn), "int -> ?";
-      "'a -> 'b", TyFun (TyParam 1, TyParam 0), "'a -> 'b";
-      "'a -> 'b", TyFun (TyFun (TyParam 1, TyParam 0), TyParam 2), "('a -> 'b) -> 'c";
+      "'a", TyParam 1;
+      "bool", TyBool;
+      "int", TyInt;
+      "?", TyDyn;
+      "int/unit -> bool/int", TyFun (TyInt, TyUnit, TyBool, TyInt);
+      "(int/'a -> 'a/'b)/unit -> bool/int",
+      TyFun (TyFun (TyInt, TyParam 1, TyParam 1, TyParam 2), TyUnit, TyBool, TyInt);
 *)
     ]
 
