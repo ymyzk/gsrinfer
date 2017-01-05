@@ -6,6 +6,13 @@ let reservedWords = [
   ("false", Parser.FALSE);
   ("int", Parser.INT);
   ("bool", Parser.BOOL);
+  ("shift", Parser.SHIFT);
+  ("reset", Parser.RESET);
+(*
+  ("if", Parser.IF);
+  ("then", Parser.THEN);
+  ("else", Parser.ELSE);
+*)
 ]
 
 }
@@ -19,8 +26,11 @@ rule main = parse
 | ":" { Parser.COLON }
 | ";;" { Parser.SEMISEMI }
 | "->" { Parser.RARROW }
+| "-" { Parser.MINUS }
+| "/" { Parser.SLASH }
 | "+" { Parser.PLUS }
 | "?" { Parser.QUESTION }
+| "^" { Parser.CARET }
 
 | ['a'-'z'] ['a'-'z' '0'-'9' '_' '\'']*
   {

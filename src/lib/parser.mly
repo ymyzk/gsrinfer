@@ -2,48 +2,66 @@
 open Syntax
 %}
 
-%token LPAREN RPAREN SEMISEMI COLON
-%token PLUS QUESTION
-%token FUN RARROW TRUE FALSE INT BOOL
+%token LPAREN RPAREN SEMISEMI COLON SLASH CARET
+%token PLUS MINUS QUESTION
+%token FUN RARROW TRUE FALSE INT BOOL SHIFT RESET
+(*
+%token IF THEN ELSE
+*)
 
 %token <int> INTV
 %token <Syntax.id> ID
 
 %start toplevel
 %type <Syntax.exp> toplevel
+
 %%
 
 toplevel :
   | Expr SEMISEMI { $1 }
 
 Expr :
+(*
+  | IfExpr { $1 }
+*)
   | FunExpr { $1 }
   | PExpr { $1 }
 
+(*
+IfExpr :
+  | IF Expr THEN Expr ELSE Expr { If ($2, $4, $6) }
+*)
+
+FunExpr :
+  | FUN OptionalAnswerTypeAnnot ID RARROW Expr { Fun ($2, $3, None, $5) }
+  | FUN OptionalAnswerTypeAnnot LPAREN ID COLON Type RPAREN RARROW Expr { Fun ($2, $4, Some $6, $9) }
+
 PExpr :
   | PExpr PLUS AppExpr { BinOp (Plus, $1, $3) }
+  | PExpr MINUS AppExpr { BinOp (Minus, $1, $3) }
   | AppExpr { $1 }
 
 AppExpr :
-  | AppExpr AExpr { App ($1, $2) }
+  | AppExpr SRExpr { App ($1, $2) }
+  | SRExpr { $1 }
+
+SRExpr :
+  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN OptionalAnswerTypeAnnot { Reset ($7, $9) }
+  | SHIFT LPAREN FUN ID RARROW Expr RPAREN { Shift ($4, None, $6) }
+  | SHIFT LPAREN FUN LPAREN ID COLON Type RPAREN RARROW Expr RPAREN { Shift ($5, Some $7, $10) }
   | AExpr { $1 }
 
 AExpr :
   | INTV { Const (ConstInt $1) }
   | TRUE { Const (ConstBool true) }
   | FALSE { Const (ConstBool false) }
+  | LPAREN RPAREN { Const ConstUnit }
   | ID { Var $1 }
+  | LPAREN Expr COLON COLON Type RPAREN { App (Fun (None, "x", Some $5, Var "x"), $2) }
   | LPAREN Expr RPAREN { $2 }
 
-FunExpr :
-  | FUN ID RARROW Expr { FunI ($2, $4) }
-  | FUN LPAREN ID COLON Type RPAREN RARROW Expr { FunE ($3, $5, $8) }
-
 Type :
-  | FunType { $1 }
-
-FunType :
-  | AType RARROW FunType { TyFun ($1, $3) }
+  | AType SLASH AType RARROW AType SLASH AType  { TyFun ($1, $3, $5, $7) }
   | AType { $1 }
 
 AType :
@@ -51,3 +69,7 @@ AType :
   | INT { TyInt }
   | BOOL { TyBool }
   | QUESTION { TyDyn }
+
+OptionalAnswerTypeAnnot :
+  | { None }
+  | CARET Type { Some $2 }
