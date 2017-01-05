@@ -181,10 +181,13 @@ let generate_constraints env e =
   let rec generate_constraints env e b =
     let t, a, c = match e with
       | Var x ->
-          let u_a = b in
-          (* TODO error handling *)
-(*                 raise @@ Type_error (Printf.sprintf "variable '%s' not found in the environment" x) *)
-          (Environment.find x env), u_a, Constraints.empty
+          let u_a = b in (
+          try
+            let u = Environment.find x env in
+            u, u_a, Constraints.empty
+          with Not_found ->
+            raise @@ Type_error (Printf.sprintf "variable '%s' not found in the environment" x)
+          )
       | Const c ->
           let u_a = b in
           let u = begin
@@ -195,16 +198,14 @@ let generate_constraints env e =
             end
           in
           u, u_a, Constraints.empty
-(*
       | BinOp (op, e1, e2) ->
-          let u1, b1, g, c1 = generate_constraints env e1 in
-          let u2, a, b2, c2 = generate_constraints env e2 in
+          let u_a0 = b in
+          let u1, u_a1, c1 = generate_constraints env e1 u_a0 in
+          let u2, u_a2, c2 = generate_constraints env e2 u_a1 in
           let c = Constraints.union c1 c2 in
-          let c = Constraints.add (ConstrEqual (b1, b2)) c in
           let c = Constraints.add (ConstrConsistent (u1, TyInt)) c in
           let c = Constraints.add (ConstrConsistent (u2, TyInt)) c in
-          TyInt, a, g, c
-*)
+          TyInt, u_a2, c
       | Fun (None, x, None, e) ->
           let u_a = b in
           let x_x, x_g = fresh_tyvar (), fresh_tyvar () in
@@ -286,7 +287,7 @@ let generate_constraints env e =
     *)
     t, a, c
   in
-  generate_constraints env e TyDyn (* TODO IS IT OK?? *)
+  generate_constraints env e @@ fresh_tyvar ()
 
 let unify constraints : substitutions =
   let rec unify c =
