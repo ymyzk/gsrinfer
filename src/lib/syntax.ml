@@ -59,6 +59,11 @@ type binop =
   | Plus
   | Minus
 
+(* binop -> string *)
+let string_of_binop = function
+  | Plus -> "+"
+  | Minus -> "-"
+
 type exp =
   | Var of id
   | Const of const
@@ -69,19 +74,30 @@ type exp =
   | Reset of exp * ty option (* <1>^2 *)
   | If of exp * exp * exp
 
+(* string -> ty option -> string *)
+let string_of_type_annot x = function
+  | None -> x
+  | Some t -> sprintf "(%s: %s)" x @@ string_of_type t
+
+(* ty option -> string *)
+let string_of_answer_type_annot = function
+  | None -> ""
+  | Some t -> sprintf "^%s" @@ string_of_type t
+
+(* exp -> string *)
 let rec string_of_exp = function
   | Var id -> id
   | Const c -> string_of_const c
   | BinOp (op, e1, e2) ->
-      sprintf "%s + %s" (string_of_exp e1) (string_of_exp e2)
-  | Fun (None, x, None, e) -> sprintf "fun %s -> %s" x (string_of_exp e)
-  | Fun (None, x, Some x_t, e) -> sprintf "fun (%s: %s) -> %s" x (string_of_type x_t) (string_of_exp e)
+      sprintf "%s %s %s" (string_of_exp e1) (string_of_binop op) (string_of_exp e2)
+  | Fun (g, x, x_t, e) ->
+      sprintf "fun%s %s -> %s" (string_of_answer_type_annot g) (string_of_type_annot x x_t) (string_of_exp e)
   | App (x, y) -> sprintf "(%s %s)" (string_of_exp x) (string_of_exp y)
-  | Shift (k, None, e) -> sprintf "shift (fun %s -> %s)" k (string_of_exp e)
-  | Shift (k, Some k_t, e) -> sprintf "shift (fun (%s: %s) -> %s)" k (string_of_type k_t) (string_of_exp e)
-  | Reset (e, None) -> sprintf "reset (fun () -> %s)" @@ string_of_exp e
+  | Shift (k, k_t, e) ->
+      sprintf "shift (fun %s -> %s)" (string_of_type_annot k k_t) (string_of_exp e)
+  | Reset (e, u) ->
+      sprintf "reset (fun () -> %s)%s" (string_of_exp e) (string_of_answer_type_annot u)
   | If _ -> raise @@ Failure "not implemented 1"
-  | _ -> raise @@ Failure "not implemented expression"
 
 (* Type Environment *)
 
