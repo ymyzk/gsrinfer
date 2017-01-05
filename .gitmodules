@@ -1,0 +1,3 @@
+[submodule "ocaml-ci-scripts"]
+	path = ocaml-ci-scripts
+	url = https://github.com/ocaml/ocaml-ci-scripts.git
