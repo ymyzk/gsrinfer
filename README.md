@@ -1,11 +1,11 @@
-# itgl
+# gsrinfer
 
-[![Build Status](https://travis-ci.org/ymyzk/itgl.svg?branch=master)](https://travis-ci.org/ymyzk/itgl)
+[![Build Status](https://travis-ci.org/ymyzk/gsrinfer.svg?branch=master)](https://travis-ci.org/ymyzk/gsrinfer)
 
-A type inference algorithm implementation for Implicitly Typed Gradual Language
+A type reconstruction algorithm implementation for the gradual implicitly typed language with shift and reset.
 
 ## Usage
-### Compile & Run interpreter
+### Compile & Run
 ```shell
 omake
 ./src/main/main
