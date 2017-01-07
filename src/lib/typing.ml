@@ -250,7 +250,7 @@ let generate_constraints env e =
           let c = Constraints.union c c4 in
           let c = Constraints.union c c5 in
           let c = Constraints.union c c6 in
-          let c = Constraints.add (ConstrEqual (u_d, u_d')) c in
+          let c = Constraints.add (ConstrConsistent (u_d, u_d')) c in
           u, u_a, c
       | Reset (e, None) ->
           let u_a = b in
