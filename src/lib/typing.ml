@@ -216,6 +216,15 @@ let generate_constraints env e =
           let x_g = fresh_tyvar () in
           let u_2, u_b, c = generate_constraints (Environment.add x u_1 env) e x_g in
           TyFun (u_1, u_b, u_2, x_g), u_a, c
+      | Fun (Some u_g, x, None, e) ->
+          let u_a = b in
+          let x_x = fresh_tyvar () in
+          let u_2, u_b, c = generate_constraints (Environment.add x x_x env) e u_g in
+          TyFun (x_x, u_b, u_2, u_g), u_a, c
+      | Fun (Some u_g, x, Some u_1, e) ->
+          let u_a = b in
+          let u_2, u_b, c = generate_constraints (Environment.add x u_1 env) e u_g in
+          TyFun (u_1, u_b, u_2, u_g), u_a, c
       | App (e1, e2) ->
           let u_d = b in
           let u_1, u_g, c1 = generate_constraints env e1 u_d in
