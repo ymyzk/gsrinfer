@@ -94,9 +94,9 @@ let rec string_of_exp = function
       sprintf "fun%s %s -> %s" (string_of_answer_type_annot g) (string_of_type_annot x x_t) (string_of_exp e)
   | App (x, y) -> sprintf "(%s %s)" (string_of_exp x) (string_of_exp y)
   | Shift (k, k_t, e) ->
-      sprintf "shift (fun %s -> %s)" (string_of_type_annot k k_t) (string_of_exp e)
+      sprintf "shift %s -> (%s)" (string_of_type_annot k k_t) (string_of_exp e)
   | Reset (e, u) ->
-      sprintf "reset (fun () -> %s)%s" (string_of_exp e) (string_of_answer_type_annot u)
+      sprintf "reset%s (%s)" (string_of_answer_type_annot u) (string_of_exp e)
   | If _ -> raise @@ Failure "not implemented 1"
 
 (* Type Environment *)

@@ -46,9 +46,9 @@ AppExpr :
   | SRExpr { $1 }
 
 SRExpr :
-  | RESET LPAREN FUN LPAREN RPAREN RARROW Expr RPAREN OptionalAnswerTypeAnnot { Reset ($7, $9) }
-  | SHIFT LPAREN FUN ID RARROW Expr RPAREN { Shift ($4, None, $6) }
-  | SHIFT LPAREN FUN LPAREN ID COLON Type RPAREN RARROW Expr RPAREN { Shift ($5, Some $7, $10) }
+  | RESET OptionalAnswerTypeAnnot SRExpr { Reset ($3, $2) }
+  | SHIFT ID RARROW SRExpr { Shift ($2, None, $4) }
+  | SHIFT LPAREN ID COLON Type RPAREN RARROW SRExpr { Shift ($3, Some $5, $8) }
   | AExpr { $1 }
 
 AExpr :
