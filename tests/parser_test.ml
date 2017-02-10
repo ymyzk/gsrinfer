@@ -20,10 +20,14 @@ let test_parse =
     BinOp (Plus,
            BinOp (Plus, Const (ConstInt 1), Const (ConstInt 2)),
            Const (ConstInt 3));
-    "reset (fun () -> y);;", Reset (Var "y", None);
-    "reset (fun () -> y)^int;;", Reset (Var "y", Some TyInt);
-    "x + reset (fun () -> y);;", BinOp (Plus, Var "x", Reset (Var "y", None));
-    "f reset (fun () -> x);;", App (Var "f", Reset (Var "x", None));
+    "reset y;;", Reset (Var "y", None);
+    "reset (y);;", Reset (Var "y", None);
+    "reset^int (y);;", Reset (Var "y", Some TyInt);
+    "x + reset (y);;", BinOp (Plus, Var "x", Reset (Var "y", None));
+    "f reset (x);;", App (Var "f", Reset (Var "x", None));
+    "shift k -> (k);;", Shift ("k", None, Var "k");
+    "shift (k:int/int->bool/int) -> (k);;", Shift ("k", Some (TyFun (TyInt, TyInt, TyBool, TyInt)), Var "k");
+    "reset shift k -> shift j -> x;;", Reset (Shift ("k", None, Shift ("j", None, Var "x")), None);
     "fun x -> x;;", Fun (None, "x", None, Var "x");
     "fun (x:int) -> x;;", Fun (None, "x", Some TyInt, Var "x");
     "fun (f:(int/bool->bool/int)) -> f;;",
