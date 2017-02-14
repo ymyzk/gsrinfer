@@ -97,7 +97,8 @@ let rec string_of_exp = function
       sprintf "shift %s -> (%s)" (string_of_type_annot k k_t) (string_of_exp e)
   | Reset (e, u) ->
       sprintf "reset%s (%s)" (string_of_answer_type_annot u) (string_of_exp e)
-  | If _ -> raise @@ Failure "not implemented 1"
+  | If (e1, e2, e3) ->
+      sprintf "if %s then %s else %s" (string_of_exp e1) (string_of_exp e2) (string_of_exp e3)
 
 (* Type Environment *)
 

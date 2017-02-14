@@ -272,22 +272,19 @@ let generate_constraints env e =
           let u_b, u_b', c = generate_constraints env e u in
           let c = Constraints.add (ConstrConsistent (u_b, u_b')) c in
           u, u_a, c
-(*
-      | If (e0, e1, e2) ->
-          let t0, d0, b, c0 = generate_constraints env e0 in
-          let t1, a1, d1, c1 = generate_constraints env e1 in
-          let t2, a2, d2, c2 = generate_constraints env e2 in
-          let a, c3 = generate_constraints_join a1 a2 in
-          let t, c4 = generate_constraints_join t1 t2 in
+      | If (e1, e2, e3) ->
+          let u_b = b in
+          let u_1, u_d, c1 = generate_constraints env e1 u_b in
+          let u_2, u_a2, c2 = generate_constraints env e2 u_d in
+          let u_3, u_a3, c3 = generate_constraints env e3 u_d in
+          let u_a, c4 = generate_constraints_join u_a2 u_a3 in
+          let u, c5 = generate_constraints_join u_2 u_3 in
           let c = Constraints.union c1 c2 in
           let c = Constraints.union c c3 in
           let c = Constraints.union c c4 in
-          let c = Constraints.add (ConstrConsistent (t0, TyBool)) c in
-          let c = Constraints.add (ConstrEqual (d0, d1)) c in
-          let c = Constraints.add (ConstrEqual (d1, d2)) c in
-          t, a, b, c
-*)
-      | _ -> raise @@ Failure "not implemented constraits"
+          let c = Constraints.union c c5 in
+          let c = Constraints.add (ConstrConsistent (u_1, TyBool)) c in
+          u, u_a, c
     in
     (* logging *)
     (*
