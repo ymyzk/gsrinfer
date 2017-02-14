@@ -16,6 +16,8 @@ open Syntax
 %right RARROW
 %right SEMI
 %right prec_if
+%left  PLUS MINUS
+%right prec_app
 
 %%
 
@@ -24,33 +26,18 @@ toplevel :
 
 Expr :
   | Expr SEMI Expr { Consq ($1, $3) }
-  | IfExpr { $1 }
-  | FunExpr { $1 }
-  | PExpr { $1 }
-
-IfExpr :
   | IF Expr THEN Expr ELSE Expr { If ($2, $4, $6) } %prec prec_if
-
-FunExpr :
   | FUN OptionalAnswerTypeAnnot ID RARROW Expr { Fun ($2, $3, None, $5) }
   | FUN OptionalAnswerTypeAnnot LPAREN ID COLON Type RPAREN RARROW Expr { Fun ($2, $4, Some $6, $9) }
+  | Expr PLUS Expr { BinOp (Plus, $1, $3) }
+  | Expr MINUS Expr { BinOp (Minus, $1, $3) }
+  | SimpleExpr SimpleExpr { App ($1, $2) } (* %prec prec_app *)
+  | RESET OptionalAnswerTypeAnnot Expr { Reset ($3, $2) } %prec prec_app
+  | SHIFT ID RARROW Expr { Shift ($2, None, $4) } %prec prec_app
+  | SHIFT LPAREN ID COLON Type RPAREN RARROW Expr { Shift ($3, Some $5, $8) } %prec prec_app
+  | SimpleExpr { $1 }
 
-PExpr :
-  | PExpr PLUS AppExpr { BinOp (Plus, $1, $3) }
-  | PExpr MINUS AppExpr { BinOp (Minus, $1, $3) }
-  | AppExpr { $1 }
-
-AppExpr :
-  | AppExpr SRExpr { App ($1, $2) }
-  | SRExpr { $1 }
-
-SRExpr :
-  | RESET OptionalAnswerTypeAnnot SRExpr { Reset ($3, $2) }
-  | SHIFT ID RARROW SRExpr { Shift ($2, None, $4) }
-  | SHIFT LPAREN ID COLON Type RPAREN RARROW SRExpr { Shift ($3, Some $5, $8) }
-  | AExpr { $1 }
-
-AExpr :
+SimpleExpr :
   | INTV { Const (ConstInt $1) }
   | TRUE { Const (ConstBool true) }
   | FALSE { Const (ConstBool false) }
