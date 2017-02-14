@@ -73,6 +73,7 @@ type exp =
   | Shift of id * ty option * exp (* S1:2.3 *)
   | Reset of exp * ty option (* <1>^2 *)
   | If of exp * exp * exp
+  | Consq of exp * exp
 
 (* string -> ty option -> string *)
 let string_of_type_annot x = function
@@ -99,6 +100,8 @@ let rec string_of_exp = function
       sprintf "reset%s (%s)" (string_of_answer_type_annot u) (string_of_exp e)
   | If (e1, e2, e3) ->
       sprintf "if %s then %s else %s" (string_of_exp e1) (string_of_exp e2) (string_of_exp e3)
+  | Consq (e1, e2) ->
+      sprintf "%s; %s" (string_of_exp e1) (string_of_exp e2)
 
 (* Type Environment *)
 

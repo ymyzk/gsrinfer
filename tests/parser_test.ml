@@ -34,6 +34,7 @@ let test_parse =
     Fun (None, "f", Some (TyFun (TyInt, TyBool, TyBool, TyInt)), Var "f");
     "fun^bool x -> x;;", Fun (Some TyBool, "x", None, Var "x");
     "fun^bool (x:int) -> x;;", Fun (Some TyBool, "x", Some TyInt, Var "x");
+    "x; y; z;;", Consq (Var "x", Consq (Var "y", Var "z"));
   ]
 
 let suite = [

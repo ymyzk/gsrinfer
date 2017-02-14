@@ -285,6 +285,13 @@ let generate_constraints env e =
           let c = Constraints.union c c5 in
           let c = Constraints.add (ConstrConsistent (u_1, TyBool)) c in
           u, u_a, c
+      | Consq (e1, e2) ->
+          let u_g = b in
+          let u_1, u_b, c1 = generate_constraints env e1 u_g in
+          let u_2, u_a, c2 = generate_constraints env e2 u_b in
+          let c = Constraints.union c1 c2 in
+          let c = Constraints.add (ConstrConsistent (u_1, TyUnit)) c in
+          u_2, u_a, c
     in
     (* logging *)
     (*

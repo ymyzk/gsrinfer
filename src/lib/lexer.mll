@@ -22,6 +22,7 @@ rule main = parse
 | "(" { Parser.LPAREN }
 | ")" { Parser.RPAREN }
 | ":" { Parser.COLON }
+| ";" { Parser.SEMI }
 | ";;" { Parser.SEMISEMI }
 | "->" { Parser.RARROW }
 | "-" { Parser.MINUS }
