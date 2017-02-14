@@ -3,7 +3,7 @@ open Syntax
 %}
 
 %token LPAREN RPAREN SEMI SEMISEMI COLON SLASH CARET
-%token PLUS MINUS QUESTION
+%token PLUS MINUS STAR QUESTION
 %token FUN RARROW TRUE FALSE INT BOOL SHIFT RESET
 %token IF THEN ELSE
 
@@ -17,6 +17,7 @@ open Syntax
 %right SEMI
 %right prec_if
 %left  PLUS MINUS
+%left  STAR SLASH
 %right prec_app
 
 %%
@@ -29,6 +30,8 @@ Expr :
   | IF Expr THEN Expr ELSE Expr { If ($2, $4, $6) } %prec prec_if
   | FUN OptionalAnswerTypeAnnot ID RARROW Expr { Fun ($2, $3, None, $5) }
   | FUN OptionalAnswerTypeAnnot LPAREN ID COLON Type RPAREN RARROW Expr { Fun ($2, $4, Some $6, $9) }
+  | Expr STAR Expr { BinOp (Mult, $1, $3) }
+  | Expr SLASH Expr { BinOp (Div, $1, $3) }
   | Expr PLUS Expr { BinOp (Plus, $1, $3) }
   | Expr MINUS Expr { BinOp (Minus, $1, $3) }
   | SimpleExpr SimpleExpr { App ($1, $2) } (* %prec prec_app *)

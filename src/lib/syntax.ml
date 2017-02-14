@@ -58,11 +58,15 @@ let string_of_const = function
 type binop =
   | Plus
   | Minus
+  | Mult
+  | Div
 
 (* binop -> string *)
 let string_of_binop = function
   | Plus -> "+"
   | Minus -> "-"
+  | Mult -> "*"
+  | Div -> "/"
 
 type exp =
   | Var of id

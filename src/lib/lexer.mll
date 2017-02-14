@@ -28,6 +28,7 @@ rule main = parse
 | "-" { Parser.MINUS }
 | "/" { Parser.SLASH }
 | "+" { Parser.PLUS }
+| "*" { Parser.STAR }
 | "?" { Parser.QUESTION }
 | "^" { Parser.CARET }
 
