@@ -24,7 +24,7 @@ let test_parse =
     "reset (y);;", Reset (Var "y", None);
     "reset^int (y);;", Reset (Var "y", Some TyInt);
     "x + reset (y);;", BinOp (Plus, Var "x", Reset (Var "y", None));
-    "f reset (x);;", App (Var "f", Reset (Var "x", None));
+    "f (reset x);;", App (Var "f", Reset (Var "x", None));
     "shift k -> (k);;", Shift ("k", None, Var "k");
     "shift (k:int/int->bool/int) -> (k);;", Shift ("k", Some (TyFun (TyInt, TyInt, TyBool, TyInt)), Var "k");
     "reset shift k -> shift j -> x;;", Reset (Shift ("k", None, Shift ("j", None, Var "x")), None);
