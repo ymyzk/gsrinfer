@@ -202,9 +202,11 @@ let generate_constraints env e =
           let u_a0 = b in
           let u1, u_a1, c1 = generate_constraints env e1 u_a0 in
           let u2, u_a2, c2 = generate_constraints env e2 u_a1 in
-          let c = Constraints.union c1 c2 in
-          let c = Constraints.add (ConstrConsistent (u1, TyInt)) c in
-          let c = Constraints.add (ConstrConsistent (u2, TyInt)) c in
+          let c = Constraints.union c1
+                  @@ Constraints.union c2
+                  @@ Constraints.add (ConstrConsistent (u1, TyInt))
+                  @@ Constraints.singleton
+                  @@ ConstrConsistent (u2, TyInt) in
           TyInt, u_a2, c
       | Fun (None, x, None, e) ->
           let u_a = b in
@@ -233,11 +235,11 @@ let generate_constraints env e =
           let u_a, c4 = generate_constraints_codc_eq u_1 in
           let c5 = generate_constraints_codf_con u_1 u_b in
           let c6 = generate_constraints_domf_con u_1 u_2 in
-          let c = Constraints.union c1 c2 in
-          let c = Constraints.union c c3 in
-          let c = Constraints.union c c4 in
-          let c = Constraints.union c c5 in
-          let c = Constraints.union c c6 in
+          let c = Constraints.union c1
+                  @@ Constraints.union c2
+                  @@ Constraints.union c3
+                  @@ Constraints.union c4
+                  @@ Constraints.union c5 c6 in
           u, u_a, c
       | Shift (k, None, e) ->
           let u_b = b in
@@ -254,12 +256,14 @@ let generate_constraints env e =
           let u_g1, c4 = generate_constraints_codc_eq u_s in
           let u_g2, c5 = generate_constraints_codf_eq u_s in
           let _, c6 = generate_constraints_join u_g1 u_g2 in
-          let c = Constraints.union c1 c2 in
-          let c = Constraints.union c c3 in
-          let c = Constraints.union c c4 in
-          let c = Constraints.union c c5 in
-          let c = Constraints.union c c6 in
-          let c = Constraints.add (ConstrConsistent (u_d, u_d')) c in
+          let c = Constraints.union c1
+                  @@ Constraints.union c2
+                  @@ Constraints.union c3
+                  @@ Constraints.union c4
+                  @@ Constraints.union c5
+                  @@ Constraints.union c6
+                  @@ Constraints.singleton
+                  @@ ConstrConsistent (u_d, u_d') in
           u, u_a, c
       | Reset (e, None) ->
           let u_a = b in
@@ -279,18 +283,22 @@ let generate_constraints env e =
           let u_3, u_a3, c3 = generate_constraints env e3 u_d in
           let u_a, c4 = generate_constraints_join u_a2 u_a3 in
           let u, c5 = generate_constraints_join u_2 u_3 in
-          let c = Constraints.union c1 c2 in
-          let c = Constraints.union c c3 in
-          let c = Constraints.union c c4 in
-          let c = Constraints.union c c5 in
-          let c = Constraints.add (ConstrConsistent (u_1, TyBool)) c in
+          let c = Constraints.union c1
+                  @@ Constraints.union c2
+                  @@ Constraints.union c3
+                  @@ Constraints.union c4
+                  @@ Constraints.union c5
+                  @@ Constraints.singleton
+                  @@ ConstrConsistent (u_1, TyBool) in
           u, u_a, c
       | Consq (e1, e2) ->
           let u_g = b in
           let u_1, u_b, c1 = generate_constraints env e1 u_g in
           let u_2, u_a, c2 = generate_constraints env e2 u_b in
-          let c = Constraints.union c1 c2 in
-          let c = Constraints.add (ConstrConsistent (u_1, TyUnit)) c in
+          let c = Constraints.union c1
+                  @@ Constraints.union c2
+                  @@ Constraints.singleton
+                  @@ ConstrConsistent (u_1, TyUnit) in
           u_2, u_a, c
     in
     (* logging *)
