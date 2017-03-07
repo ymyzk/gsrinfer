@@ -5,6 +5,7 @@ install:
   - eval $(opam config env)
   - opam install menhir omake ounit
 script:
+  - omake
   - omake test
 env:
   - OCAML_VERSION=4.01 OPAMYES=1
@@ -16,7 +17,7 @@ os:
   # - osx
 cache:
   directories:
-    - $HOME/.opam
+    - "$HOME/.opam"
 notifications:
   slack:
     secure: l5vvm3JadcViNVpxQq9XBzRUHfy7rAEj7ckS6eWmY8wBJGQZD6Fhgw+MY53XUhbgX0COVIfJJhx1ILwJLo9ZDfmmJILYYMPsmkVGieJk4N3IOzGLEAGa3B6DUA0BvaydbelAV+15GAWM/TSe3U+xa92ZIrukuiEsyHsaT98OKIVBLO5EpXW7cjJN9VwUAMZMduWRyhnm2ttNICTO78spRjzBvP7xPHgaCDxmDQGJnX6qFqAnke5aSNzmIpsE9uJregNFiBDpXqyZ7ifuhLXrXZNauWxZ9ji9w+qhv2QHNJ0qcN/qANnMvctqx99w2lL9wnZRojn0GEnGTABwUTkhr3eNCXhyDa4lcX61u2k/PFjfdOewPfhAgbH4dI747D0ZBVcxyDuvuy7zv64+rFdHwHG1T1qTuXCp0MegM4KbKDo+1pV22QuAaJZgkU2riJnlh7WE0YkREETVasR93pG1xaiyACJGhbdLZKLtq8W3jpEPAmHJntWUiUaQIKDfeP2IaN9PkKrJy41vQe5eIcI9YxsoatDzU2nrt6Vag2fm1nB4Nj4dJmCNIX4KgLeXUEbyV4rLmB/20B9RWDp1TeQosoFFzeizmRxAnN//suZSFOGGuAj6PdxP6nnwgC5Xo2KhUwKqOfZ5QwoBakMJjHkn61r6yq136nImFgneQVW5c0I=
