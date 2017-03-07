@@ -8,7 +8,6 @@ script:
   - omake
   - omake test
 env:
-  - OCAML_VERSION=4.01 OPAMYES=1
   - OCAML_VERSION=4.02 OPAMYES=1
   - OCAML_VERSION=4.03 OPAMYES=1
   - OCAML_VERSION=4.04 OPAMYES=1
