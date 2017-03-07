@@ -2,7 +2,7 @@
 
 [![Build Status](https://travis-ci.org/ymyzk/gsrinfer.svg?branch=master)](https://travis-ci.org/ymyzk/gsrinfer)
 
-A type reconstruction algorithm implementation for the gradual implicitly typed language with shift and reset.
+A type reconstruction algorithm implementation for the implicitly and gradually typed language with shift and reset.
 
 **Try it online!! https://gsrinfer.ymyzk.com**
 
