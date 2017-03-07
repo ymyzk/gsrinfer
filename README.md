@@ -17,7 +17,7 @@ omake test
 ```
 
 ## Requirements
-- OCaml 4.01+
+- OCaml 4.02+
 - OMake
 - Menhir
 - OUnit2
