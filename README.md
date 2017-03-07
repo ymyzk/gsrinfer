@@ -23,4 +23,5 @@ omake test
 - OUnit2
 
 ## References
-- [Principal Type Schemes for Gradual Programs. In Proc. of ACM POPL, 2015.](http://www.cs.ubc.ca/~rxg/ptsgp.pdf)
+- Yusuke Miyazaki and Atsushi Igarashi. A type reconstruction algorithm for gradually typed delimited continuations. In 第19回プログラミングおよびプログラミング言語ワークショップ (PPL2017) 論文集, 2017.
+- [Ronald Garcia and Matteo Cimini. Principal Type Schemes for Gradual Programs. In Proc. of ACM POPL, 2015.](http://www.cs.ubc.ca/~rxg/ptsgp.pdf)
