@@ -3,7 +3,7 @@ sudo: required
 install:
   - bash -ex ocaml-ci-scripts/.travis-ocaml.sh
   - eval $(opam config env)
-  - opam install menhir omake ounit
+  - opam install js_of_ocaml menhir omake ounit
 script:
   - omake
   - omake test
