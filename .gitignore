@@ -30,6 +30,7 @@ setup.log
 .omakedb
 .omakedb.lock
 lexer.ml
+parser.conflicts
 parser.ml
 parser.mli
 parser.output
