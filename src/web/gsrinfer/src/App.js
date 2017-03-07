@@ -11,13 +11,7 @@ class InferenceForm extends Component {
   constructor(props) {
     super(props);
 
-    this.defaultInput = "fun x -> x;;";
-    this.state = {
-      result: {
-        isSucceeded: true,
-        result: "",
-      },
-    };
+    this.defaultInput = "fun x -> x";
   }
 
   handleChange = (event, newValue) => {

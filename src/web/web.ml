@@ -4,7 +4,7 @@ let _ =
       method infer x = begin
         let empty = Syntax.Environment.empty in
         try
-          let x = Js.to_string x in
+          let x = Printf.sprintf "%s;;" @@ Js.to_string x in
           let e = Parser.toplevel Lexer.main @@ Lexing.from_string x in
           let s = Syntax.string_of_type @@ Typing.type_of_exp empty e in
           object%js
