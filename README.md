@@ -4,6 +4,8 @@
 
 A type reconstruction algorithm implementation for the gradual implicitly typed language with shift and reset.
 
+**Try it online!! https://gsrinfer.ymyzk.com**
+
 ## Usage
 ### Compile & Run
 ```shell
@@ -21,6 +23,7 @@ omake test
 - OMake
 - Menhir
 - OUnit2
+- js_of_ocaml
 
 ## References
 - Yusuke Miyazaki and Atsushi Igarashi. A type reconstruction algorithm for gradually typed delimited continuations. In 第19回プログラミングおよびプログラミング言語ワークショップ (PPL2017) 論文集, 2017.
