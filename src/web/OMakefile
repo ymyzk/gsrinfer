@@ -82,7 +82,7 @@ BYTE_ENABLED = true
 FILES[] =
     web
 
-LIBRARY = web
+LIBRARY = gsrinfer/public/gsrinfer
 OCAML_LIBS += ../lib/itgl
 # OCAML_CLIBS +=
 # OCAML_OTHER_LIBS +=

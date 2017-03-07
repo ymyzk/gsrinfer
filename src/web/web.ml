@@ -6,7 +6,7 @@ let _ =
         try
           let x = Js.to_string x in
           let e = Parser.toplevel Lexer.main @@ Lexing.from_string x in
-          let s = Printf.sprintf "- : %s" @@ Syntax.string_of_type @@ Typing.type_of_exp empty e in
+          let s = Syntax.string_of_type @@ Typing.type_of_exp empty e in
           object%js
             val isSucceeded = Js._true
             val result = Js.string s
